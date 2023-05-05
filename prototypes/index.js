@@ -20,26 +20,28 @@ const { dinosaurs, humans, movies } = require('./datasets/dinosaurs');
 
 // DATASET: kitties from ./datasets/kitties
 const kittyPrompts = {
-  orangePetNames() {
+  orangePetNames(animals) {
     // Return an array of just the names of kitties who are orange e.g.
         // ['Tiger', 'Snickers']
 
         /* CODE GOES HERE */
-
+        return animals
+        .filter(animal => animal.color === "orange")
+        .map(animal => animal.name);
     // Annotation:
     // Write your annotation here as a comment
   },
 
-  sortByAge() {
+  sortByAge(animals) {
     // Sort the kitties by their age
 
     /* CODE GOES HERE */
-
+    return animals.sort((a, b) => b.age - a.age);
     // Annotation:
     // Write your annotation here as a comment
   },
 
-  growUp() {
+  growUp(animals) {
     // Return an array of kitties who have all grown up by 2 years e.g.
     // [{
     //   name: 'Felicia',
@@ -54,8 +56,12 @@ const kittyPrompts = {
     // ...etc]
 
     /* CODE GOES HERE */
+    return animals.map(animal => {
+      animal.age += 2;
+      return animal;
+    });
   }
-};
+}
 
 // PLEASE READ-----------------------
 // Currently, your functions are probably using the `kitties` global import variable.
@@ -77,7 +83,7 @@ const kittyPrompts = {
 
 // DATASET: clubs from ./datasets/clubs
 const clubPrompts = {
-  membersBelongingToClubs() {
+  membersBelongingToClubs(clubList) {
     // Your function should access the clubs data through a parameter (it is being passed as an argument in the test file)
     // Create an object whose keys are the names of people, and whose values are
     // arrays that include the names of the clubs that person is a part of. e.g.
@@ -88,7 +94,15 @@ const clubPrompts = {
     // }
 
     /* CODE GOES HERE */
-
+    return clubList.reduce((compilation, clubItem) => {
+      clubItem.members.forEach(member => {
+        if (!compilation[member]) {
+          compilation[member] = [];
+        }
+        compilation[member].push(clubItem.club)
+      })
+      return compilation;
+    }, {})
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -123,6 +137,12 @@ const modPrompts = {
     // ]
 
     /* CODE GOES HERE */
+    return mods.map(modItem => {
+      return {
+        mod: modItem.mod,
+        studentsPerInstructor: modItem.students/modItem.instructors
+      }
+    })
 
     // Annotation:
     // Write your annotation here as a comment
@@ -157,7 +177,7 @@ const cakePrompts = {
     // ]
 
     /* CODE GOES HERE */
-
+    return cakes.map(cake => ({flavor: cake.cakeFlavor, inStock: cake.inStock}));
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -184,7 +204,7 @@ const cakePrompts = {
     // ]
 
     /* CODE GOES HERE */
-
+    return cakes.filter(cake => cake.inStock);
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -194,7 +214,7 @@ const cakePrompts = {
     // 59
 
     /* CODE GOES HERE */
-
+    return cakes.reduce((total, cake) => cake.inStock + total, 0)
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -205,7 +225,14 @@ const cakePrompts = {
     // ['dutch process cocoa', 'toasted sugar', 'smoked sea salt', 'berries', ..etc]
 
     /* CODE GOES HERE */
-
+    return cakes.reduce((toppings, cake) => {
+      cake.toppings.forEach(topping => {
+        if (!toppings.includes(topping)) {
+          toppings.push(topping);
+        }
+      })
+      return toppings;
+    }, [])
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -222,7 +249,16 @@ const cakePrompts = {
     // }
 
     /* CODE GOES HERE */
-
+    return cakes.reduce((list, cake) => {
+      cake.toppings.forEach(topping => {
+        if (!list[topping]) {
+          list[topping] = 1;
+        } else {
+          list[topping]++;
+        }
+      })
+      return list;
+    }, {})
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -256,7 +292,7 @@ const classPrompts = {
     // ]
 
     /* CODE GOES HERE */
-
+    return classrooms.filter(classroom => classroom.program === "FE");
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -270,7 +306,14 @@ const classPrompts = {
     // }
 
     /* CODE GOES HERE */
-
+    return classrooms.reduce((totalCapacity, classroom) => {
+      if(classroom.program === "FE") {
+        totalCapacity.feCapacity += classroom.capacity;
+      } else {
+        totalCapacity.beCapacity += classroom.capacity;
+      }
+      return totalCapacity;
+    }, {feCapacity:0, beCapacity: 0})
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -279,7 +322,7 @@ const classPrompts = {
     // Return the array of classrooms sorted by their capacity (least capacity to greatest)
 
     /* CODE GOES HERE */
-
+    return classrooms.sort((a,b) => a.capacity - b.capacity);
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -294,7 +337,7 @@ const classPrompts = {
 // DATASET: books from './datasets/books
 
 const bookPrompts = {
-  removeViolence() {
+  removeViolence(bookCollection) {
     // Your function should access the books data through a parameter (it is being passed as an argument in the test file)
     // return an array of all book titles that are not horror or true crime. Eg:
 
@@ -306,12 +349,14 @@ const bookPrompts = {
 
 
     /* CODE GOES HERE */
-
+    return bookCollection
+    .filter(book => book.genre !== "Horror" && book.genre !== "True Crime")
+    .map(book => book.title)
     // Annotation:
     // Write your annotation here as a comment
 
   },
-  getNewBooks() {
+  getNewBooks(bookCollection) {
     // return an array of objects containing all books that were
     // published in the 90's and 00's. Inlucde the title and the year Eg:
 
@@ -320,7 +365,9 @@ const bookPrompts = {
     //  { title: 'The Curious Incident of the Dog in the Night-Time', year: 2003 }]
 
     /* CODE GOES HERE */
-
+    return bookCollection
+    .filter(book => book.published >= 1990)
+    .map(book => ({title: book.title, year: book.published}))
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -336,6 +383,9 @@ const bookPrompts = {
     //  { title: 'The Curious Incident of the Dog in the Night-Time', year: 2003 }]
 
     /* CODE GOES HERE */
+    return books
+    .filter(book => book.published > year)
+    .map(book => ({title: book.title, year: book.published}));
 
     // Annotation:
     // Write your annotation here as a comment
