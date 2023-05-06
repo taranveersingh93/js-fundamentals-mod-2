@@ -408,7 +408,7 @@ const weatherPrompts = {
     // [ 40, 40, 44.5, 43.5, 57, 35, 65.5, 62, 14, 46.5 ]
 
     /* CODE GOES HERE */
-
+    return weather.map(area => (area.temperature.high + area.temperature.low)/2);
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -421,7 +421,9 @@ const weatherPrompts = {
     // 'Raleigh, North Carolina is mostly sunny.' ]
 
     /* CODE GOES HERE */
-
+    return weather
+    .filter(area => area.type.includes("sunny"))
+    .map(area => `${area.location} is ${area.type}.`);
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -436,7 +438,12 @@ const weatherPrompts = {
     // }
 
     /* CODE GOES HERE */
-
+    return weather.reduce((mostHumidArea, area) => {
+      if (area.humidity > mostHumidArea.humidity) {
+        mostHumidArea = area;
+      }
+      return mostHumidArea;
+    }, {humidity: 0})
     // Annotation:
     // Write your annotation here as a comment
 
@@ -462,7 +469,14 @@ const nationalParksPrompts = {
     //}
 
     /* CODE GOES HERE */
-
+    return nationalParks.reduce((updatedList, park) => {
+      if (park.visited) {
+        updatedList.parksVisited.push(park.name);
+      } else {
+        updatedList.parksToVisit.push(park.name);
+      }
+      return updatedList;
+    }, {parksToVisit: [], parksVisited: []})
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -478,7 +492,7 @@ const nationalParksPrompts = {
 
 
     /* CODE GOES HERE */
-
+    return nationalParks.map(park => ({[park.location]: park.name}))
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -500,7 +514,14 @@ const nationalParksPrompts = {
     //   'rock climbing' ]
 
     /* CODE GOES HERE */
-
+    return nationalParks.reduce((allActivities, park) => {
+      park.activities.forEach(activity => {
+        if (!allActivities.includes(activity)) {
+          allActivities.push(activity);
+        }
+      })
+      return allActivities;
+    }, [])  
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -526,7 +547,7 @@ const breweryPrompts = {
     // 40
 
     /* CODE GOES HERE */
-
+    return breweries.reduce((beerCount, brewery) => beerCount + brewery.beers.length, 0);
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -541,7 +562,7 @@ const breweryPrompts = {
     // ]
 
     /* CODE GOES HERE */
-
+    return breweries.map(brewery => ({name: brewery.name, beerCount: brewery.beers.length}));
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -553,7 +574,8 @@ const breweryPrompts = {
 
 
     /* CODE GOES HERE */
-
+    return breweries.find(brewery => brewery.name === breweryName).beers.length
+    // .map(brewery => brewery.beers.length);
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -562,8 +584,18 @@ const breweryPrompts = {
     // Return the beer which has the highest ABV of all beers
     // e.g.
     // { name: 'Barrel Aged Nature\'s Sweater', type: 'Barley Wine', abv: 10.9, ibu: 40 }
-
+    
     /* CODE GOES HERE */
+    function topAbvBeer(beers) {
+      return beers.reduce((topAbv, beer) => {
+        if (topAbv.abv < beer.abv) {
+          topAbv = beer;
+        }
+        return topAbv;
+      },{abv: 0})
+    }
+    return topAbvBeer(breweries.map(brewery => topAbvBeer(brewery.beers)));
+
 
     // Annotation:
     // Write your annotation here as a comment
@@ -586,7 +618,7 @@ const boardGamePrompts = {
     // ["Chess", "Catan", "Checkers", "Pandemic", "Battle Ship", "Azul", "Ticket to Ride"]
 
     /* CODE GOES HERE */
-
+    return boardGames[type].map(game => game.name);
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -598,7 +630,9 @@ const boardGamePrompts = {
     // ["Candy Land", "Connect Four", "Operation", "Trouble"]
 
     /* CODE GOES HERE */
-
+    return (boardGames[type]
+    .map(game => game.name)
+    .sort())
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -609,7 +643,13 @@ const boardGamePrompts = {
     // { name: 'Codenames', rating: 7.4, maxPlayers: 8 },
 
     /* CODE GOES HERE */
-
+    return boardGames[type]
+    .reduce((highestRated, game) => {
+      if (game.rating > highestRated.rating) {
+        highestRated = game;
+      }
+      return highestRated;
+    }, {rating: 0})
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -620,7 +660,9 @@ const boardGamePrompts = {
     // note: do not worry about rounding your result.
 
     /* CODE GOES HERE */
-
+    let totalScore = boardGames[type]
+    .reduce(((total, game) => total + game.rating), 0);
+    return totalScore/boardGames[type].length;
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -632,7 +674,11 @@ const boardGamePrompts = {
     // note: do not worry about rounding your result.
 
     /* CODE GOES HERE */
+     let filteredGames = boardGames[type]
+     .filter(game => game.maxPlayers === maximumPlayers);
 
+     return filteredGames
+     .reduce((total, game) => total + game.rating, 0)/filteredGames.length;
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -679,7 +725,13 @@ const turingPrompts = {
     // ]
 
     /* CODE GOES HERE */
-
+    return instructors.map(instructor => {
+      let students = cohorts.find(cohort => cohort.module === instructor.module).studentCount;
+      return {
+        name: instructor.name,
+        studentCount: students
+      }
+    })
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -692,7 +744,12 @@ const turingPrompts = {
     // }
 
     /* CODE GOES HERE */
-
+    return cohorts.reduce((cohortList, singleCohort) => {
+      let cohortKey = `cohort${singleCohort.cohort}`;
+      let teacherCount = instructors.filter(instructor => instructor.module === singleCohort.module).length;
+      cohortList[cohortKey] = singleCohort.studentCount/teacherCount;
+      return cohortList;
+    }, {})
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -713,7 +770,20 @@ const turingPrompts = {
     //   }
 
     /* CODE GOES HERE */
+    let canTeach = (instructor, cohort) => {
+      return cohort.curriculum.some(subject => instructor.teaches.includes(subject));
+    }
 
+    return instructors.reduce((instructorsList, teacher) => {
+      let teachableModules = [];
+      cohorts.forEach(cohort => {
+        if (canTeach(teacher, cohort)) {
+          teachableModules.push(cohort.module);
+        }
+      });
+      instructorsList[teacher.name] = teachableModules;
+      return instructorsList;
+    }, {})
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -729,7 +799,24 @@ const turingPrompts = {
     // }
 
     /* CODE GOES HERE */
+    let checkForTeacher = (subject) => {
+      let availableTeachers = [];
+      instructors.forEach(instructor => {
+        if (instructor.teaches.includes(subject)) {
+          availableTeachers.push(instructor.name);
+        }
+      })
+      return availableTeachers;
+    }
 
+    return cohorts.reduce((allSubjects, cohort) => {
+      cohort.curriculum.forEach(subject => {
+        if (!allSubjects[subject]) {
+          allSubjects[subject] = checkForTeacher(subject);
+        }
+      });
+      return allSubjects;
+    }, {})
     // Annotation:
     // Write your annotation here as a comment
   }
