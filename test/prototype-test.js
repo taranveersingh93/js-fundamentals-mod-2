@@ -624,7 +624,7 @@ describe("PROTOTYPES", () => {
   });
 
   describe("Boss Prompts", () => {
-    it.skip("bossLoyalty", () => {
+    it("bossLoyalty", () => {
       const e = bossPrompts.bossLoyalty();
 
       expect(e).to.deep.equal([{
@@ -641,7 +641,7 @@ describe("PROTOTYPES", () => {
   });
 
   describe("Astronomy Prompts", () => {
-    it.skip("starsInConstellations", () => {
+    it("starsInConstellations", () => {
       const e = astronomyPrompts.starsInConstellations();
 
       expect(e).to.deep.equal([{
@@ -674,7 +674,7 @@ describe("PROTOTYPES", () => {
     ])
     });
 
-    it.skip("starsByColor", () => {
+    it("starsByColor", () => {
       const e = astronomyPrompts.starsByColor();
 
       expect(e).to.deep.equal({
@@ -752,7 +752,7 @@ describe("PROTOTYPES", () => {
       })
     });
 
-    it.skip("constellationsStarsExistIn", () => {
+    it("constellationsStarsExistIn", () => {
       const e = astronomyPrompts.constellationsStarsExistIn();
 
       expect(e).to.deep.equal(["Canis Major", "Carina", "Boötes", "Auriga", "Orion", "Lyra", "Canis Minor", "The Plow", "Orion", "The Little Dipper"])
@@ -760,13 +760,13 @@ describe("PROTOTYPES", () => {
   });
 
   describe("Ultima Prompts", () => {
-    it.skip("totalDamage", () => {
+    it("totalDamage", () => {
       const e = ultimaPrompts.totalDamage();
 
       expect(e).to.deep.equal(113)
     });
 
-    it.skip("charactersByTotal", () => {
+    it("charactersByTotal", () => {
       const e = ultimaPrompts.charactersByTotal();
 
       expect(e).to.deep.equal([{
@@ -794,7 +794,7 @@ describe("PROTOTYPES", () => {
   });
 
   describe("Dinosaur Prompts", () => {
-    it.skip("countAwesomeDinosaurs", () => {
+    it("countAwesomeDinosaurs", () => {
       const e = dinosaurPrompts.countAwesomeDinosaurs();
 
       expect(e).to.deep.equal({
@@ -806,7 +806,7 @@ describe("PROTOTYPES", () => {
       })
     });
 
-    it.skip("averageAgePerMovie", () => {
+    it("averageAgePerMovie", () => {
       const e = dinosaurPrompts.averageAgePerMovie();
 
       expect(e).to.deep.equal({
@@ -826,7 +826,7 @@ describe("PROTOTYPES", () => {
       })
     });
 
-    it.skip("uncastActors", () => {
+    it("uncastActors", () => {
       const e = dinosaurPrompts.uncastActors();
 
       expect(e).to.deep.equal([{
@@ -850,7 +850,7 @@ describe("PROTOTYPES", () => {
       }])
     });
 
-    it.skip("actorsAgesInMovies", () => {
+    it("actorsAgesInMovies", () => {
       const e = dinosaurPrompts.actorsAgesInMovies();
 
       expect(e).to.deep.equal([{

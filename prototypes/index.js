@@ -850,7 +850,13 @@ const bossPrompts = {
     // ]
 
     /* CODE GOES HERE */
-
+    let allBosses = Object.keys(bosses);
+    return allBosses.map(boss => {
+      return {
+        bossName: bosses[boss].name,
+        sidekickLoyalty: bosses[boss].sidekicks.reduce((loyalty, sidekick) => loyalty + sidekicks.find(theSidekick => theSidekick.name === sidekick.name).loyaltyToBoss, 0)
+      }
+    })
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -905,7 +911,18 @@ const astronomyPrompts = {
     // ]
 
     /* CODE GOES HERE */
+    let constellationKeys = Object.keys(constellations);
+    let allConstellationNames = constellationKeys.reduce((nameList, constellation) => {
+      nameList.push(...constellations[constellation].alternateNames)
+      return nameList;
+    }, []);
+    let constellationStars = [];
 
+    allConstellationNames.forEach(aConstellation => {
+      constellationStars.push(...stars.filter(star => star.constellation === aConstellation))
+    })
+
+    return constellationStars;
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -922,7 +939,13 @@ const astronomyPrompts = {
     // }
 
     /* CODE GOES HERE */
-
+    return stars.reduce((starList, star) => {
+      if (!starList[star.color]) {
+        starList[star.color] = [];
+      }
+      starList[star.color].push(star);
+      return starList;
+    }, {})    
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -944,7 +967,10 @@ const astronomyPrompts = {
 
 
     /* CODE GOES HERE */
-
+    return stars
+    .sort((a,b) => a.visualMagnitude - b.visualMagnitude)
+    .map(star => star.constellation)
+    .filter(constellation => constellation.length)
     // Annotation:
     // Write your annotation here as a comment
   }
@@ -974,7 +1000,11 @@ const ultimaPrompts = {
     // Answer => 113
 
     /* CODE GOES HERE */
-
+    let allWeapons = characters.reduce((list, character) => {
+      list.push(...character.weapons);
+      return list;
+    }, []);
+    return allWeapons.reduce((totalDamage, weapon) => totalDamage + weapons[weapon].damage , 0)
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -985,7 +1015,16 @@ const ultimaPrompts = {
     // ex: [ { Avatar: { damage: 27, range: 24 }, { Iolo: {...}, ...}
 
     /* CODE GOES HERE */
-
+    return characters.map(character => {
+      let characterStat = character.weapons.reduce((stats, weapon) => {
+        stats.damage += weapons[weapon].damage;
+        stats.range += weapons[weapon].range;
+        return stats;
+      }, {damage: 0, range:0})
+      return {
+        [character.name]: characterStat
+      }
+    })
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -1021,7 +1060,16 @@ const dinosaurPrompts = {
     // }
 
     /* CODE GOES HERE */
-
+    return movies.reduce((dinoCounts, movie) => {
+      let awesomeCount = movie.dinos.reduce((count, dino) => {
+        if (dinosaurs[dino].isAwesome) {
+          count++;
+        };
+        return count;
+      }, 0);
+      dinoCounts[movie.title] = awesomeCount;
+      return dinoCounts;
+    }, {})
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -1053,7 +1101,22 @@ const dinosaurPrompts = {
     */
 
     /* CODE GOES HERE */
+    let getAvgAge = movie => {
+      const refYear = movie.yearReleased;
+      let totalAge = movie.cast.reduce((total, actor) => {
+        return total + refYear - humans[actor].yearBorn;
+      }, 0)
+      let numberActors = movie.cast.length;
+      return Math.floor(totalAge/numberActors);
+    }
 
+    return movies.reduce((accumulator, movie) => {
+      if (!accumulator[movie.director]) {
+        accumulator[movie.director] = {}
+      }
+      accumulator[movie.director][movie.title] = getAvgAge(movie);
+      return accumulator;
+    }, {})  
     // Annotation:
     // Write your annotation here as a comment
   },
@@ -1085,6 +1148,36 @@ const dinosaurPrompts = {
     */
 
     /* CODE GOES HERE */
+      let castCharacters = movies.reduce((fullCast, movie) => {
+        fullCast.push(movie.cast);
+        return fullCast.flat();
+      }, []);
+
+      let humanNames = Object.keys(humans);
+      let uncastNames = [];
+      humanNames.forEach(humanName => {
+        if (!castCharacters.includes(humanName)) {
+          uncastNames.push(humanName);
+        }
+      })
+
+      return uncastNames
+      .map(actorName => {
+        let actor = {
+          name: actorName,
+          nationality: humans[actorName].nationality,
+          imdbStarMeterRating: humans[actorName].imdbStarMeterRating
+        };
+        return actor;
+      })
+      .sort((a,b) => {
+        if (a.nationality > b.nationality) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+
 
     // Annotation:
     // Write your annotation here as a comment
@@ -1107,7 +1200,27 @@ const dinosaurPrompts = {
     */
 
     /* CODE GOES HERE */
+    let getMovieReleaseAges = actorName => {
+      let releaseYears = [];
+      movies.forEach(movie => {
+        if (movie.cast.includes(actorName)) {
+          releaseYears.push(movie.yearReleased);
+        }
+      })
+      let releaseAges = releaseYears.map(year => year - humans[actorName].yearBorn);
+      return releaseAges;
+    }
 
+    let allHumans = Object.keys(humans);
+    let actorsWithAge =  allHumans.map(human => {
+      return {
+        name: human,
+        ages: getMovieReleaseAges(human)
+      };
+    })
+
+    let castedActorAges = actorsWithAge.filter(actor => actor.ages.length);
+    return castedActorAges;
     // Annotation:
     // Write your annotation here as a comment
   }
